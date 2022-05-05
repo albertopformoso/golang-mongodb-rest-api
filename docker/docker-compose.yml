@@ -1,0 +1,39 @@
+version: '3.9'
+services:
+  app:
+    depends_on:
+      - mongo
+    container_name: go-app
+    tty: true
+    stdin_open: true
+    restart: on-failure
+    ports:
+      - 8000:8000
+    networks:
+      - mynetwork
+    build:
+      context: ./../src
+      dockerfile: Dockerfile
+    image: my-go-app
+    env_file:
+      - ./../src/.env
+    links:
+      - "mongo"
+  mongo:
+    container_name: mongodb
+    tty: true
+    stdin_open: true
+    restart: on-failure
+    image: 'mongo'
+    env_file:
+      - ../db/mongo.env
+    volumes:
+      - ./mongo-volume:/data/db
+    ports:
+      - 27017:27017
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge
